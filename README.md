@@ -1,15 +1,26 @@
 # Simple web crawler
 
-### About application
+### Requirements
 
-...
+The crawler should be limited to one domain. 
+Given a starting URL it should visit all pages within 
+the domain, but not follow the links to external sites 
+such as Google or Twitter.
 
-### Installing
+The output should be a simple structured site map 
+(this does not need to be a traditional XML s
+itemap - just some sort of output to reflect what your 
+crawler has discovered), showing links to other pages 
+under the same domain, links to external URLs and 
+links to static content such as images for each 
+respective page.
+
+### Build
 
 * Clone repository:
 
 ```
-git clone ...
+git clone https://github.com/sebastianczech/crawler
 ```
 
 * Install ``virtualenv`` (if needed):
@@ -25,7 +36,7 @@ cd crawler
 virtualenv -p python3 venv
 ```
 
-### Running
+### Run
 
 ```
 ...
