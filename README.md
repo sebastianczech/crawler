@@ -36,8 +36,20 @@ cd crawler
 virtualenv -p python3 venv
 ```
 
+* Activate virtual environment:
+
+``` 
+source venv/bin/activate
+```
+
+### Test
+
+```
+python -m unittest test_simple_request.py 
+```
+
 ### Run
 
 ```
-...
+python simple_request.py
 ```
