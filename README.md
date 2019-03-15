@@ -45,11 +45,11 @@ source venv/bin/activate
 ### Test
 
 ```
-python -m unittest test_simple_request.py 
+python -m unittest test_crawler.py
 ```
 
 ### Run
 
 ```
-python simple_request.py
+python crawler.py URL
 ```
