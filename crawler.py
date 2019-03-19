@@ -2,6 +2,7 @@ import requests
 import sys
 from urllib.parse import urlparse
 import re
+from page import Page
 
 def is_absolute(url):
     return bool(urlparse(url).netloc)
@@ -24,7 +25,7 @@ def get_links_from_content_line(line, type, links, parsed_url):
             link = part.replace("=", "").split("\"")[1]
             if is_absolute(link) and len(parsed_url.netloc) > 0 and parsed_url.netloc.replace("www.", "") in link \
                     or not is_absolute(link):
-                links.append(link)
+                links.append(Page(link, type))
 
 def parse_html_page(url):
     try:
