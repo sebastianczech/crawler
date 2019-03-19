@@ -8,16 +8,23 @@ def is_absolute(url):
 
 def get_list_of_links_for_domain(url, content):
     links = []
+    resources = []
     parsed_url = urlparse(url)
     for line in content.splitlines():
-        for part in re.split("href|src", line):
-            if part.startswith("=\"") and len(part.replace("=", "").split("\"")) > 0:
-                link = part.replace("=", "").split("\"")[1]
-                if is_absolute(link) and len(parsed_url.netloc) > 0 and parsed_url.netloc.replace("www.", "") in link \
-                        or not is_absolute(link):
-                    links.append(link)
+        get_links_from_content_line(line, "href", links, parsed_url)
+        get_links_from_content_line(line, "src", resources, parsed_url)
     print("no links: " + str(len(links)))
+    print("no resources: " + str(len(resources)))
     return links
+
+
+def get_links_from_content_line(line, type, links, parsed_url):
+    for part in re.split(type, line):
+        if part.startswith("=\"") and len(part.replace("=", "").split("\"")) > 0:
+            link = part.replace("=", "").split("\"")[1]
+            if is_absolute(link) and len(parsed_url.netloc) > 0 and parsed_url.netloc.replace("www.", "") in link \
+                    or not is_absolute(link):
+                links.append(link)
 
 def parse_html_page(url):
     try:
