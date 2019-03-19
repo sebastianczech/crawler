@@ -8,11 +8,10 @@ all_links = []
 
 def get_list_of_links_for_domain(url, domain, content, level):
     links = []
-    resources = []
     parsed_url = urlparse(url)
     for line in content.splitlines():
         get_links_from_content_line(line, "href", links, parsed_url, domain, level)
-        get_links_from_content_line(line, "src", resources, parsed_url, domain, level)
+        get_links_from_content_line(line, "src", links, parsed_url, domain, level)
     return links
 
 
@@ -25,14 +24,15 @@ def get_links_from_content_line(line, type, links, parsed_url, domain, level):
                 if page not in all_links:
                     links.append(page)
                     all_links.append(page)
-                    try:
-                        print("GET " + page.absolute_url)
-                        r = requests.get(page.absolute_url)
-                        if r.status_code == 200 and "text/html" in r.headers['Content-Type']\
-                                and domain in page.absolute_url:
-                            page.sublinks = get_list_of_links_for_domain(page.absolute_url, domain, r.text, level+1)
-                    except:
-                        pass
+                    if level < 5 and type == "href":
+                        try:
+                            print("GET " + page.absolute_url)
+                            r = requests.get(page.absolute_url)
+                            if r.status_code == 200 and "text/html" in r.headers['Content-Type']\
+                                    and domain in page.absolute_url:
+                                page.sublinks = get_list_of_links_for_domain(page.absolute_url, domain, r.text, level+1)
+                        except:
+                            pass
 
 def parse_html_page(url):
     try:
