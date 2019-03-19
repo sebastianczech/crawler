@@ -14,8 +14,6 @@ def get_list_of_links_for_domain(url, content):
     for line in content.splitlines():
         get_links_from_content_line(line, "href", links, parsed_url)
         get_links_from_content_line(line, "src", resources, parsed_url)
-    print("no links: " + str(len(links)))
-    print("no resources: " + str(len(resources)))
     return links
 
 
@@ -25,13 +23,23 @@ def get_links_from_content_line(line, type, links, parsed_url):
             link = part.replace("=", "").split("\"")[1]
             if is_absolute(link) and len(parsed_url.netloc) > 0 and parsed_url.netloc.replace("www.", "") in link \
                     or not is_absolute(link):
-                links.append(Page(link, type))
+                page = Page(link, type)
+                try:
+                    r = requests.get(link)
+                    # if r.status_code == 200 and "text/html" in r.headers['Content-Type']:
+                    #         return get_list_of_links_for_domain(url, r.text)
+                except:
+                    pass
+                links.append(page)
 
 def parse_html_page(url):
     try:
         r = requests.get(url)
         if r.status_code == 200:
-            return get_list_of_links_for_domain(url, r.text)
+            if "text/html" in r.headers['Content-Type']:
+                return get_list_of_links_for_domain(url, r.text)
+            else:
+                return "Incorrect content type " + r.headers['Content-Type'] + " in response instead of text/html"
         else:
             return "Could not parse " + url + ", because of receiving HTTP status code " + str(r.status_code)
     except requests.exceptions.ConnectionError:
@@ -43,4 +51,10 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Please run program with 1 argument using following command: \npython crawler.py URL")
     else:
-        print(parse_html_page(sys.argv[1]))
+        parsed_data = parse_html_page(sys.argv[1])
+        if type(parsed_data) is list:
+            print("Simple structured site map for " + sys.argv[1] + ":\n")
+            for page in parsed_data:
+                print(page)
+        else:
+            print(parsed_data)
