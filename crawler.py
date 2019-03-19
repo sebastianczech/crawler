@@ -22,7 +22,7 @@ def get_links_from_content_line(line, type, links, parsed_url, domain, level):
             link = part.replace("=", "").split("\"")[1]
             if Page.is_absolute(link) and domain in link or not Page.is_absolute(link):
                 page = Page(link, type, parsed_url.netloc, level)
-                if page not in all_links and len(all_links) < 50:
+                if page not in all_links:
                     links.append(page)
                     all_links.append(page)
                     try:
@@ -54,6 +54,7 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Please run program with 1 argument using following command: \npython crawler.py URL")
     else:
+        print("Starting to crawling on page " + sys.argv[1] + "\n")
         parsed_data = parse_html_page(sys.argv[1])
         if type(parsed_data) is list:
             print("\nSimple structured site map for " + sys.argv[1] + ":\n")

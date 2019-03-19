@@ -16,7 +16,9 @@ class Page:
         if len(self.sublinks) > 0:
             children = ""
             for child in self.sublinks:
-                children = child.toString() + "\n"
+                if len(children) > 0:
+                    children += "\n"
+                children += child.toString()
             return prefix + self.link + ": \n" + children
         else:
             return prefix + self.link
