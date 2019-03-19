@@ -1,9 +1,10 @@
 from urllib.parse import urlparse
 
 class Page:
-    def __init__(self, link, type, domain_url):
+    def __init__(self, link, type, domain_url, level):
         self.link = link
         self.type = type
+        self.level = level
         self.sublinks = []
         self.absolute_url = Page.get_absolute(link, domain_url)
 
@@ -11,7 +12,17 @@ class Page:
         self.sublinks.append(subpage)
 
     def toString(self):
-        return "{ type: " + self.type + ", url: " + self.link + " absolute: " + self.absolute_url + ", sublinks: " + str(self.sublinks) + "}"
+        prefix = " " * self.level
+        if len(self.sublinks) > 0:
+            children = ""
+            for child in self.sublinks:
+                children = child.toString() + "\n"
+            return prefix + self.link + ": \n" + children
+        else:
+            return prefix + self.link
+
+    def toJson(self):
+        return "{ type: " + self.type + ", url: " + self.link + ", absolute: " + self.absolute_url + ", sublinks: " + str(self.sublinks) + "}"
 
     def __eq__(self, other):
         if isinstance(other, Page):
