@@ -6,6 +6,7 @@ from page import Page
 
 all_links = []
 
+
 def get_list_of_links_for_domain(url, domain, content, level):
     links = []
     parsed_url = urlparse(url)
@@ -28,11 +29,13 @@ def get_links_from_content_line(line, type, links, parsed_url, domain, level):
                         try:
                             print("GET " + page.absolute_url)
                             r = requests.get(page.absolute_url)
-                            if r.status_code == 200 and "text/html" in r.headers['Content-Type']\
+                            if r.status_code == 200 and "text/html" in r.headers['Content-Type'] \
                                     and domain in page.absolute_url:
-                                page.sublinks = get_list_of_links_for_domain(page.absolute_url, domain, r.text, level+1)
+                                page.sublinks = get_list_of_links_for_domain(page.absolute_url, domain, r.text,
+                                                                             level + 1)
                         except:
-                            pass
+                            print("ERROR while trying to GET " + page.absolute_url)
+
 
 def parse_html_page(url):
     try:
@@ -49,6 +52,7 @@ def parse_html_page(url):
         return "Failed to establish a new connection with url " + url
     except requests.exceptions.MissingSchema:
         return "Invalid url " + url
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:

@@ -1,5 +1,6 @@
 from urllib.parse import urlparse
 
+
 class Page:
     def __init__(self, link, type, domain_url, level):
         self.link = link
@@ -24,7 +25,8 @@ class Page:
             return prefix + self.link
 
     def toJson(self):
-        return "{ type: " + self.type + ", url: " + self.link + ", absolute: " + self.absolute_url + ", sublinks: " + str(self.sublinks) + "}"
+        return "{ type: " + self.type + ", url: " + self.link + ", absolute: " + self.absolute_url + ", sublinks: " + str(
+            self.sublinks) + "}"
 
     def __eq__(self, other):
         if isinstance(other, Page):
@@ -32,10 +34,10 @@ class Page:
         return False
 
     def __repr__(self):
-        return self.toString();
+        return self.toString()
 
     def __str__(self):
-        return self.toString();
+        return self.toString()
 
     @staticmethod
     def is_absolute(url):
