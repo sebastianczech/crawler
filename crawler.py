@@ -7,31 +7,34 @@ from page import Page
 all_links = []
 
 
-def get_list_of_links_for_domain(url, domain, content, level):
+def get_list_of_links_for_domain(url, domain, proto, content, level):
     links = []
     parsed_url = urlparse(url)
     for line in content.splitlines():
-        get_links_from_content_line(line, "href", links, parsed_url, domain, level)
-        get_links_from_content_line(line, "src", links, parsed_url, domain, level)
+        get_links_from_content_line(line, "href", links, parsed_url, domain, proto, level)
+        get_links_from_content_line(line, "src", links, parsed_url, domain, proto, level)
     return links
 
 
-def get_links_from_content_line(line, type, links, parsed_url, domain, level):
+def get_links_from_content_line(line, type, links, parsed_url, domain, proto, level):
     for part in re.split(type, line):
         if part.startswith("=\"") and len(part.replace("=", "").split("\"")) > 0:
             link = part.replace("=", "").split("\"")[1]
             if Page.is_absolute(link) and domain in link or not Page.is_absolute(link):
-                page = Page(link, type, parsed_url.netloc, level)
+                page = Page(link, type, parsed_url.netloc, proto, level)
                 if page not in all_links:
                     links.append(page)
                     all_links.append(page)
-                    if level < 5 and type == "href":
+                    if type == "href":
                         try:
                             print("GET " + page.absolute_url)
                             r = requests.get(page.absolute_url)
                             if r.status_code == 200 and "text/html" in r.headers['Content-Type'] \
                                     and domain in page.absolute_url:
-                                page.sublinks = get_list_of_links_for_domain(page.absolute_url, domain, r.text,
+                                page.sublinks = get_list_of_links_for_domain(page.absolute_url,
+                                                                             domain,
+                                                                             proto,
+                                                                             r.text,
                                                                              level + 1)
                         except Exception as e:
                             print("ERROR " + str(e) + "while trying to GET " + page.absolute_url)
@@ -43,7 +46,11 @@ def parse_html_page(url):
         r = requests.get(url)
         if r.status_code == 200:
             if "text/html" in r.headers['Content-Type']:
-                return get_list_of_links_for_domain(url, urlparse(url).netloc.replace("www.", ""), r.text, 0)
+                return get_list_of_links_for_domain(url,
+                                                    urlparse(url).netloc,
+                                                    urlparse(url).scheme,
+                                                    r.text,
+                                                    0)
             else:
                 return "Incorrect content type " + r.headers['Content-Type'] + " in response instead of text/html"
         else:

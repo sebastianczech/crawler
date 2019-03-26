@@ -20,11 +20,18 @@ class TestCrawler(unittest.TestCase):
                       str(crawler.parse_html_page("http://www.devilpa")))
 
     def test_number_of_links_is_greater_than_0(self):
-        self.assertGreater(len(crawler.get_list_of_links_for_domain("http://www.link.pl", "http://www.link.pl",
-                                                                    "<a href=\"http://www.link.pl\"></a>", 0)), 0)
+        self.assertGreater(len(crawler.get_list_of_links_for_domain("http://www.link.pl",
+                                                                    "http://www.link.pl",
+                                                                    "http",
+                                                                    "<a href=\"http://www.link.pl\"></a>",
+                                                                    0)), 0)
 
     def test_number_of_links_is_equal_0(self):
-        self.assertEqual(len(crawler.get_list_of_links_for_domain("http://www.link.pl", "http://www.link.pl", "", 0)),
+        self.assertEqual(len(crawler.get_list_of_links_for_domain("http://www.link.pl",
+                                                                  "http://www.link.pl",
+                                                                  "http",
+                                                                  "",
+                                                                  0)),
                          0)
 
 

@@ -2,12 +2,12 @@ from urllib.parse import urlparse
 
 
 class Page:
-    def __init__(self, link, type, domain_url, level):
+    def __init__(self, link, type, domain_url, proto, level):
         self.link = link
         self.type = type
         self.level = level
         self.sublinks = []
-        self.absolute_url = Page.get_absolute(link, domain_url)
+        self.absolute_url = Page.get_absolute(link, domain_url, proto)
 
     def appendLink(self, subpage):
         self.sublinks.append(subpage)
@@ -44,8 +44,8 @@ class Page:
         return bool(urlparse(url).netloc)
 
     @staticmethod
-    def get_absolute(url, domain):
+    def get_absolute(url, domain, proto):
         if Page.is_absolute(url):
             return url
         else:
-            return (str(domain) + "/" + url).replace("//", "/")
+            return (proto + "://" + (str(domain) + "/" + url).replace("//", "/"))
