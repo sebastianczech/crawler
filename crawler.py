@@ -20,25 +20,26 @@ def get_links_from_content_line(line, type, links, parsed_url, domain, proto, le
     for part in re.split(type, line):
         if part.startswith("=\"") and len(part.replace("=", "").split("\"")) > 0:
             link = part.replace("=", "").split("\"")[1]
-            if Page.is_absolute(link) and domain in link or not Page.is_absolute(link):
-                page = Page(link, type, parsed_url.netloc, proto, level)
-                if page not in all_links:
-                    links.append(page)
-                    all_links.append(page)
-                    if level < depth and type == "href":
-                        try:
-                            print("GET " + page.absolute_url)
-                            r = requests.get(page.absolute_url)
-                            if r.status_code == 200 and "text/html" in r.headers['Content-Type'] \
-                                    and domain in page.absolute_url:
-                                page.sublinks = get_list_of_links_for_domain(page.absolute_url,
-                                                                             domain,
-                                                                             proto,
-                                                                             r.text,
-                                                                             level + 1,
-                                                                             depth)
-                        except Exception as e:
-                            print("ERROR " + str(e) + "while trying to GET " + page.absolute_url)
+            # if Page.is_absolute(link) and domain in link or not Page.is_absolute(link):
+            page = Page(link, type, parsed_url.netloc, proto, level)
+            if page not in all_links:
+                links.append(page)
+                all_links.append(page)
+                if level < depth and type == "href" and \
+                        (Page.is_absolute(link) and domain in link or not Page.is_absolute(link)):
+                    try:
+                        print("GET " + page.absolute_url)
+                        r = requests.get(page.absolute_url)
+                        if r.status_code == 200 and "text/html" in r.headers['Content-Type'] \
+                                and domain in page.absolute_url:
+                            page.sublinks = get_list_of_links_for_domain(page.absolute_url,
+                                                                         domain,
+                                                                         proto,
+                                                                         r.text,
+                                                                         level + 1,
+                                                                         depth)
+                    except Exception as e:
+                        print("ERROR " + str(e) + "while trying to GET " + page.absolute_url)
 
 
 def parse_html_page(url, depth):

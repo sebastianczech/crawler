@@ -54,10 +54,12 @@ python -m unittest test_crawler.py
 python crawler.py URL DEPTH
 ```
 
-where ``URL`` is address of HTTP resource to crawl 
+Where ``URL`` is address of HTTP resource to crawl 
 and ``DEPTH`` is optional parameter to limit the depth of crawl e.g:
 
 ```
 python crawler.py https://www.google.com 3
 ```
- 
+
+If ``DEPTH`` is too big, the for this simple web crawler Python
+is showing stack overflow error. 
