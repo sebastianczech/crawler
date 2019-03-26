@@ -33,8 +33,8 @@ def get_links_from_content_line(line, type, links, parsed_url, domain, level):
                                     and domain in page.absolute_url:
                                 page.sublinks = get_list_of_links_for_domain(page.absolute_url, domain, r.text,
                                                                              level + 1)
-                        except:
-                            print("ERROR while trying to GET " + page.absolute_url)
+                        except Exception as e:
+                            print("ERROR " + str(e) + "while trying to GET " + page.absolute_url)
 
 
 def parse_html_page(url):
