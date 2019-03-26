@@ -7,16 +7,16 @@ from page import Page
 all_links = []
 
 
-def get_list_of_links_for_domain(url, domain, proto, content, level):
+def get_list_of_links_for_domain(url, domain, proto, content, level, depth):
     links = []
     parsed_url = urlparse(url)
     for line in content.splitlines():
-        get_links_from_content_line(line, "href", links, parsed_url, domain, proto, level)
-        get_links_from_content_line(line, "src", links, parsed_url, domain, proto, level)
+        get_links_from_content_line(line, "href", links, parsed_url, domain, proto, level, depth)
+        get_links_from_content_line(line, "src", links, parsed_url, domain, proto, level, depth)
     return links
 
 
-def get_links_from_content_line(line, type, links, parsed_url, domain, proto, level):
+def get_links_from_content_line(line, type, links, parsed_url, domain, proto, level, depth):
     for part in re.split(type, line):
         if part.startswith("=\"") and len(part.replace("=", "").split("\"")) > 0:
             link = part.replace("=", "").split("\"")[1]
@@ -25,7 +25,7 @@ def get_links_from_content_line(line, type, links, parsed_url, domain, proto, le
                 if page not in all_links:
                     links.append(page)
                     all_links.append(page)
-                    if type == "href":
+                    if level < depth and type == "href":
                         try:
                             print("GET " + page.absolute_url)
                             r = requests.get(page.absolute_url)
@@ -35,12 +35,13 @@ def get_links_from_content_line(line, type, links, parsed_url, domain, proto, le
                                                                              domain,
                                                                              proto,
                                                                              r.text,
-                                                                             level + 1)
+                                                                             level + 1,
+                                                                             depth)
                         except Exception as e:
                             print("ERROR " + str(e) + "while trying to GET " + page.absolute_url)
 
 
-def parse_html_page(url):
+def parse_html_page(url, depth):
     try:
         print("GET " + url)
         r = requests.get(url)
@@ -50,7 +51,8 @@ def parse_html_page(url):
                                                     urlparse(url).netloc,
                                                     urlparse(url).scheme,
                                                     r.text,
-                                                    0)
+                                                    0,
+                                                    depth)
             else:
                 return "Incorrect content type " + r.headers['Content-Type'] + " in response instead of text/html"
         else:
@@ -62,11 +64,15 @@ def parse_html_page(url):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Please run program with 1 argument using following command: \npython crawler.py URL")
+    if len(sys.argv) != 2 and len(sys.argv) != 3:
+        print("Please run program with 1 or 2 arguments using following command: \npython crawler.py URL DEPTH")
     else:
-        print("Starting to crawling on page " + sys.argv[1] + "\n")
-        parsed_data = parse_html_page(sys.argv[1])
+        depth = 3
+        if len(sys.argv) == 3:
+            depth = int(sys.argv[2])
+
+        print("Starting to crawling on page " + sys.argv[1] + " with depth " + str(depth) + "\n")
+        parsed_data = parse_html_page(sys.argv[1], depth)
         if type(parsed_data) is list:
             print("\nSimple structured site map for " + sys.argv[1] + ":\n")
             for page in parsed_data:

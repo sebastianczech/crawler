@@ -20,9 +20,9 @@ class Page:
                 if len(children) > 0:
                     children += "\n"
                 children += child.toString()
-            return prefix + self.link + ": \n" + children
+            return prefix + self.absolute_url + ": \n" + children
         else:
-            return prefix + self.link
+            return prefix + self.absolute_url
 
     def toJson(self):
         return "{ type: " + self.type + ", url: " + self.link + ", absolute: " + self.absolute_url + ", sublinks: " + str(
